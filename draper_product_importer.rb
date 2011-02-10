@@ -42,6 +42,7 @@ class DraperProductImporter
           "web_description"=>nil, "import_reference"=> row[5], "height_options"=>nil, "description"=> row[23], "contents"=> row[24],
            "classification"=>nil, "carriage_terms"=>nil, "buying_price"=>nil, "specifications"=> row[25], "dealer_discount_code"=> row[32],
             "shipping_code"=>nil, "print_description"=>nil, "coupon_image_file_name"=>nil, "brand_id"=>nil, "available_until"=>nil)
+            populate_image(record,row[15])
     else
       record.update_attributes("position"=>1, "delivery_time"=>nil, "delivery_price_in_pennies"=>nil,
         "price_breaks"=>nil, "imported_at"=> Time.now, "height_option"=>nil, "minimum_order_quantity"=>nil,
@@ -51,6 +52,17 @@ class DraperProductImporter
     record.save!
     puts "#{record.class.to_s} , id: #{record.id} extracted and saved!"
   end
+  
+  def populate_image(product,filename)
+    file = ftp(filename)
+    "image extracted for product {product.id}!" if product.images.create!(:image => File.open(file))
+    # cleanup temp files
+  end
+  
+  def ftp(filename)
+    return "path to temporarily stored file"
+  end
+  
   
 end
     
