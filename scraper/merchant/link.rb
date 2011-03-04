@@ -22,15 +22,18 @@ module Import
     protected
     
     def scrap
+      puts "visiting link::: #{@link}"
       visit @link
-      sleep(2)
+      sleep(1)
     end
     
     def parse
-      parsed_file = FasterCSV.read('/Users/krishnarokhale/downloads/graphic-links.csv')
+      if File.exists?(LINKS_PATH)
+      parsed_file = FasterCSV.read(LINKS_PATH)
       parsed_file.delete_at(0)
       init_data(parsed_file)
-      File.delete('/Users/krishnarokhale/downloads/graphic-links.csv')
+      File.delete(LINKS_PATH)
+      end
     end
     
     def init_data(parsed_file)

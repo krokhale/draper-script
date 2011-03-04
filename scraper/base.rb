@@ -8,17 +8,21 @@ require 'fastercsv'
 
 module Import
   
+  PROGRAMMES_PATH = '/Users/krishnarokhale/downloads/programmes.csv'
+  LINKS_PATH = '/Users/krishnarokhale/downloads/graphic-links.csv' 
+  
   def self.init
    Capybara.register_driver :selenium do |app|
       Capybara::Driver::Selenium.new(app, :browser => :chrome)
     end
     Capybara.current_driver = :selenium
     Capybara.run_server = false
-    Capybara.save_and_open_page_path = '/Users/krishnarokhale/downloads'
   end
   
   class Scraper
     include Capybara
+    
+    attr_reader :merchants
         
     def initialize   
      Import.init
@@ -43,11 +47,11 @@ module Import
       merchant_ids = parse
       links = generate_links(merchant_ids)
       @merchants = init_merchants(links)
-      File.delete('/Users/krishnarokhale/downloads/programmes.csv')
+      File.delete(PROGRAMMES_PATH)
     end 
     
     def parse
-      parsed_file = FasterCSV.read('/Users/krishnarokhale/downloads/programmes.csv')
+      parsed_file = FasterCSV.read(PROGRAMMES_PATH)
       parsed_file.delete_at(0)
       merchant_ids = parsed_file.collect {|row| row[11]}.uniq
       return merchant_ids
