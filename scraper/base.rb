@@ -4,6 +4,7 @@ require 'capybara/dsl'
 require 'merchant/merchant'
 require 'merchant/link'
 require 'fastercsv'
+require 'hpricot'
 
 
 module Import

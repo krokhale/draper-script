@@ -38,7 +38,10 @@ module Import
     
     def init_data(parsed_file)
       parsed_file.each do |row|
-        @data << {:date_added => row[0], :dimensions => row[1], :image_url => row[5], :endpoint => row[5]}
+        doc = Hpricot(row[5])
+        endpoint = (doc/"a").first.attributes.to_hash.values.first unless (doc/"a").first.nil?
+        image_url = (doc/"img").first.attributes.to_hash.values.first unless (doc/"img").first.nil?
+        @data << {:date_added => row[0], :dimensions => row[1], :image_url => image_url, :endpoint => endpoint}
       end
     end
     
