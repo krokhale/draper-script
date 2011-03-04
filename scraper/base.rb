@@ -2,21 +2,26 @@ require 'rubygems'
 require 'capybara'
 require 'capybara/dsl'
 require 'merchant/merchant'
+require 'merchant/link'
 require 'fastercsv'
 
 
 module Import
   
+  def self.init
+   Capybara.register_driver :selenium do |app|
+      Capybara::Driver::Selenium.new(app, :browser => :chrome)
+    end
+    Capybara.current_driver = :selenium
+    Capybara.run_server = false
+    Capybara.save_and_open_page_path = '/Users/krishnarokhale/downloads'
+  end
+  
   class Scraper
     include Capybara
         
     def initialize   
-      Capybara.register_driver :selenium do |app|
-        Capybara::Driver::Selenium.new(app, :browser => :chrome)
-      end
-      Capybara.current_driver = :selenium
-      Capybara.run_server = false
-      Capybara.save_and_open_page_path = '/Users/krishnarokhale/downloads'
+     Import.init
     end
     
     def scrape!
@@ -24,6 +29,7 @@ module Import
       fill_in 'email', :with => "pizzaboy@pizzapowered.com"
       fill_in 'password', :with => "pizzaboy"
       click_button 'login'
+      sleep(5)
       visit "https://users.buy.at/ma/index.php/affiliateProgrammes/programmes?&format=csv"
       sleep(5)
       driver
@@ -37,6 +43,7 @@ module Import
       merchant_ids = parse
       links = generate_links(merchant_ids)
       @merchants = init_merchants(links)
+      File.delete('/Users/krishnarokhale/downloads/programmes.csv')
     end 
     
     def parse
@@ -63,5 +70,5 @@ module Import
   
 end
 
-importer = Import::Scraper.new
-importer.scrape!
+#importer = Import::Scraper.new
+#importer.scrape!
